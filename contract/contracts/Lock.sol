@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-contract Lock {
+contract Web3ScamRegistry {
     // ==============================
     //  STRUCTS
     // ==============================
@@ -63,7 +63,7 @@ contract Lock {
         profiles[profileHash] = Profile({
             profileUrl: _profileUrl,
             isListed: true,
-            reportCount: 1,
+            reportCount: 0,
             firstReporter: msg.sender,
             firstReportTimestamp: block.timestamp
         });
