@@ -4,6 +4,7 @@ const {
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
+const { Profiler } = require("react");
 
 describe("Lock", function () {
   // We define a fixture to reuse the same setup in every test.
@@ -45,6 +46,35 @@ describe("Lock", function () {
       await expect(
         registry.addProfile(profileUrl, reason, evidentUrl)
       ).to.be.revertedWith("Profile is already listed");
+    });
+  });
+
+  describe("Adding Report", function () {
+    it("should add report and emit event", async function () {
+      const { registry, owner } = await loadFixture(deployWeb3ScamRegistry);
+      const profileUrl = "https://linkdin";
+      const reason = "it's fake ";
+      const evidentUrl = "https://jdks";
+      await registry.addProfile(profileUrl, reason, evidentUrl);
+      await expect(registry.addReport(profileUrl, reason, evidentUrl))
+        .to.emit(registry, "ReportAdded")
+        .withArgs(profileUrl, owner.address, anyValue);
+
+      const report = await registry.getReports(profileUrl);
+      expect(report[0].evidenceUri).to.equal(evidentUrl);
+      expect(report[0].reason).to.equal(reason);
+      expect(report[0].reporter).to.equal(owner.address);
+    });
+
+    it("should rever if added report without listing profile", async function () {
+      const { registry, owner } = await loadFixture(deployWeb3ScamRegistry);
+      const profileUrl = "https://linkdin";
+      const reason = "it's fake ";
+      const evidentUrl = "https://jdks";
+
+      await expect(
+        registry.addReport(profileUrl, reason, evidentUrl)
+      ).to.revertedWith("Profile is not listed");
     });
   });
 });

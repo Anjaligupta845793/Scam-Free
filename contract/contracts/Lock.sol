@@ -7,6 +7,8 @@ contract Web3ScamRegistry {
     // ==============================
     struct Profile {
         string profileUrl;
+        string name;
+        string discription;
         bool isListed;
         uint256 reportCount;
         address firstReporter;
@@ -31,7 +33,7 @@ contract Web3ScamRegistry {
     // ==============================
     mapping(bytes32 => Profile) private profiles;
     mapping(bytes32 => Report[]) private reports;
-    bytes32[] private allProfileHashes;
+    bytes32[] public allProfileHashes;
 
     // ==============================
     //  MODIFIERS
@@ -54,6 +56,8 @@ contract Web3ScamRegistry {
      */
     function addProfile(
         string memory _profileUrl,
+        string memory _name,
+        string memory _discription,
         string memory _reason,
         string memory _evidenceUrl
     ) public profileNotListed(_profileUrl) {
