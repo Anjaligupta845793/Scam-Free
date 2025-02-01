@@ -59,6 +59,16 @@ export const contractABI = [
       },
       {
         internalType: "string",
+        name: "_name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_discription",
+        type: "string",
+      },
+      {
+        internalType: "string",
         name: "_reason",
         type: "string",
       },
@@ -127,6 +137,16 @@ export const contractABI = [
             type: "string",
           },
           {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "discription",
+            type: "string",
+          },
+          {
             internalType: "bool",
             name: "isListed",
             type: "bool",
@@ -170,6 +190,16 @@ export const contractABI = [
           {
             internalType: "string",
             name: "profileUrl",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "discription",
             type: "string",
           },
           {

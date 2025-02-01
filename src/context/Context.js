@@ -2,6 +2,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
 import { contractABI, contractAddress } from "./constent";
+import { toast } from "react-hot-toast";
 
 export const ContractContext = createContext();
 
@@ -10,6 +11,7 @@ export const ContractProvider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
+  const [profiles, setprofiles] = useState([]);
 
   const initializeProvider = async () => {
     if (!window.ethereum) {
@@ -53,6 +55,29 @@ export const ContractProvider = ({ children }) => {
     }
   };
 
+  const setProfileHandler = async (url, Name, discription, reason, fileUrl) => {
+    try {
+      await contract.addProfile(url, Name, discription, reason, fileUrl);
+      //const txReceipt = await txResponse.wait(1);
+
+      toast.success("profile is set successfully");
+    } catch (error) {
+      console.log("got the error while adding profile");
+      toast.error("something went wrong ");
+    }
+  };
+
+  const getProfilesHandler = async () => {
+    if (!contract) {
+      console.error("Contract is not initialized yet!");
+      return;
+    }
+    const profiles = await contract.getAllProfiles();
+
+    console.log(profiles);
+    setprofiles(profiles);
+  };
+
   useEffect(() => {
     initializeProvider();
 
@@ -73,7 +98,15 @@ export const ContractProvider = ({ children }) => {
   }, []);
 
   return (
-    <ContractContext.Provider value={{ connectWallet, account, contract }}>
+    <ContractContext.Provider
+      value={{
+        connectWallet,
+        account,
+        contract,
+        setProfileHandler,
+        getProfilesHandler,
+      }}
+    >
       {children}
     </ContractContext.Provider>
   );

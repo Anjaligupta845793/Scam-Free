@@ -24,8 +24,8 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <ul className="md:flex hidden gap-7  px-6 p-2">
           <Link href="#Home">Home</Link>
-          <Link href="#Product">About</Link>
-          <Link href="#Pricing">Search</Link>
+          <Link href="/Profile">Profile</Link>
+          <Link href="/Create">Create</Link>
         </ul>
 
         {/* Desktop Buttons */}

@@ -1,6 +1,13 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import { PinataSDK } from "pinata-web3";
+import { useContract } from "@/context/Context";
+
+const pinata = new PinataSDK({
+  pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT,
+  pinataGateway: process.env.NEXT_PUBLIC_GATEWAY,
+});
 
 const Page = () => {
   const [name, setname] = useState("");
@@ -9,8 +16,12 @@ const Page = () => {
   const [reason, setreason] = useState("");
   const [image, setimage] = useState("");
   const [isValid, setisValid] = useState(true);
+  const [fileUrl, setfileUrl] = useState("");
+  const [uploadLoader, setuploadLoader] = useState(false);
+  const { setProfileHandler } = useContract();
+  const [submitLoader, setsubmitLoader] = useState(false);
 
-  const imageHandler = (e) => {
+  const imageHandler = async (e) => {
     const file = e.target.files[0];
     if (!file) {
       console.log("no file is selected!");
@@ -18,6 +29,18 @@ const Page = () => {
     }
     setimage(file);
     console.log(file);
+    console.log("pinata", pinata);
+    setuploadLoader(true);
+    try {
+      const upload = await pinata.upload.file(file);
+      console.log(upload);
+      const fileurl = "https://gateway.pinata.cloud/ipfs/" + upload.IpfsHash;
+      setfileUrl(fileurl);
+      setuploadLoader(false);
+    } catch (error) {
+      console.log(error);
+      setuploadLoader(false);
+    }
   };
   const validateLinkedinURL = (e) => {
     const url = e.target.value;
@@ -25,9 +48,18 @@ const Page = () => {
     const linkedinPattern =
       /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-_%]+\/?$/;
     setisValid(linkedinPattern.test(url));
-    if (!isValid) {
-      console.log("wrong url");
+    const status = linkedinPattern.test(url);
+    console.log(status);
+    if (!status) {
+      console.log("wrong");
     }
+  };
+  const submitHandler = (e) => {
+    setsubmitLoader(true);
+    e.preventDefault();
+
+    setProfileHandler(url, name, discription, reason, fileUrl);
+    setsubmitLoader(false);
   };
 
   return (
@@ -38,7 +70,7 @@ const Page = () => {
           <h2 className="text-white text-2xl font-semibold mb-4">
             Report Scammer
           </h2>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={submitHandler}>
             <div className="form-control">
               <label className="label text-white">
                 <span className="label-text">LinkedIn Profile URL</span>
@@ -89,6 +121,9 @@ const Page = () => {
             <div className="form-control">
               <label className="label text-white">
                 <span className="label-text">Screenshot</span>
+                {uploadLoader && (
+                  <span className="loading loading-ring loading-xs"></span>
+                )}
               </label>
               <input
                 type="file"
@@ -96,8 +131,15 @@ const Page = () => {
                 onChange={imageHandler}
               />
             </div>
-            <button className="btn btn-primary w-full mt-4">
-              Submit Report
+            <button
+              className="btn btn-primary w-full mt-4"
+              disabled={submitLoader}
+            >
+              {submitLoader ? (
+                <span className="loading loading-ring loading-xs"></span>
+              ) : (
+                "Submit Report"
+              )}
             </button>
           </form>
         </div>

@@ -66,6 +66,8 @@ contract Web3ScamRegistry {
 
         profiles[profileHash] = Profile({
             profileUrl: _profileUrl,
+            name:_name,
+            discription:_discription,
             isListed: true,
             reportCount: 0,
             firstReporter: msg.sender,
